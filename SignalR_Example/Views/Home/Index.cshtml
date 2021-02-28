@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+
+<script>
+    let connection;
+    document.addEventListener("DOMContentLoaded", function() {
+        try {
+
+            const TestCallFunction = function(data) {
+                console.log(data);
+            };
+
+            // Register Hub
+            connection = new signalR.HubConnectionBuilder().withUrl("/SignalRHub").build();
+            // Connect specific calls to the client to functions
+            connection.on("TestClientCall", TestCallFunction);
+
+            // Don't forget to start the application
+            connection.start().then(() => {
+                // Connection established
+                console.log("Connection established ... perhaps initialise stuff");
+                // Call server side method
+                connection.invoke("InitData", "Answer to the Ultimate Question of Life, the Universe, and Everything")
+                    .catch(function(err) {
+                        console.log("Error: " + err);
+                    });
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    });
+</script>
